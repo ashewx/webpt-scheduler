@@ -41,8 +41,11 @@ function WebhookProcessing(req, res) {
 
 	switch(intent){
 		case "Welcome Intent":
-		  ssml = `<speak>Welcome to the Web<say-as interpret-as="characters">PT</say-as> appointment scheduler.</speak>`;
-			console.log(agent.session);
+			respond = function () {
+				ssml = `<speak>Welcome to the Web<say-as interpret-as="characters">PT</say-as> appointment scheduler.</speak>`;
+				console.log(agent.session);
+				agent.add(ssml);
+			}
 			break;
 
 		case "print-form":
@@ -64,8 +67,9 @@ function WebhookProcessing(req, res) {
 						pt_id = pt_info.doctorid;
 						console.log(pt_id);
 						ssml = `<speak>Your Physical Therapist is ` + pt_name + `<speak>`;
+						agent.add(ssml);
 					}
-				}).catch(e => {console.log(e.stack); ssml = `<speak>Unable to find Physical Therapist info for patient ` + patient_id + `<speak>`;});
+				}).catch(e => {console.log(e.stack); ssml = `<speak>Unable to find Physical Therapist info for patient ` + patient_id + `<speak>`; agent.add(ssml);});
 
 				agent.add(ssml);
 			}
@@ -88,8 +92,8 @@ function WebhookProcessing(req, res) {
 		      }).catch(e => {console.log(e.stack); ssml = '<speak>Unable to set Physical Therapist for patient ' + patient_id + '<speak>';});
 				}).then(function() {
 					ssml = `<speak>Your Physical Therapist was set to ` + agent.parameters['first-name'] + ' ' + agent.parameters['last-name'] + `<speak>`;
-				}).catch(e => {console.log(e.stack); ssml = `<speak>Unable to get Physical Therapist ` + agent.parameters['first-name'] + ' ' + agent.parameters['last-name'] + `<speak>`;});
-				agent.add(ssml);
+					agent.add(ssml);
+				}).catch(e => {console.log(e.stack); ssml = `<speak>Unable to get Physical Therapist ` + agent.parameters['first-name'] + ' ' + agent.parameters['last-name'] + `<speak>`; agent.add(ssml);});
 			}
 			break;
 
