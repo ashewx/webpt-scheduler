@@ -53,7 +53,7 @@ function WebhookProcessing(req, res) {
 			function query() {
 
 			}
-			text = 'SELECT d.fname, d.lname, d.doctorid FROM doctors AS d, patients AS p, goesto AS g WHERE' + patient_id + ' = g.patientid AND d.doctorid = g.doctorid';
+			text = 'SELECT d.fname, d.lname, d.doctorid FROM doctors AS d, patients AS p, goesto AS g WHERE ' + patient_id + ' = g.patientid AND d.doctorid = g.doctorid';
 			let pt_info = null;
 			client.query(text).then(response => {
 				console.log(response.rows[0]);
