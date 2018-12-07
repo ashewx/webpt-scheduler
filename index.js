@@ -26,8 +26,8 @@ const errorSound = `<audio src="https://notificationsounds.com/sound-effects/str
 const successSound = `<audio src="https://notificationsounds.com/message-tones/filling-your-inbox-251/download/ogg">`
 
 // Test Variables
-const patient_id = 1
-var pt_id = 0
+const patient_id = 1;
+var pt_id = 0;
 
 function WebhookProcessing(req, res) {
 	 //Create an instance
@@ -74,7 +74,6 @@ function WebhookProcessing(req, res) {
 			// get physical therapist for current user
 			// pt_id = "SELECT d.id FROM doctors AS d WHERE d.name = " + agent.parameters
 			// INSERT INTO goesto VALUES(patient_id, pt_id);
-			let pt_id = null;
 			client.query('SELECT d.doctorid FROM doctors AS d WHERE d.fname = ' + agent.parameters['first-name'] + ' AND d.lname = ' + agent.parameters['last-name']).then(response => {
 				console.log(response.rows[0]);
 				pt_id = response.rows[0]['doctorid'];
