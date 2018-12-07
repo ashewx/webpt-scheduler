@@ -50,9 +50,6 @@ function WebhookProcessing(req, res) {
 
 		case "get-pt":
 			// SQL select doctor first name, last name, id for the patient's physical therapist
-			function query() {
-
-			}
 			text = 'SELECT d.fname, d.lname, d.doctorid FROM doctors AS d, patients AS p, goesto AS g WHERE ' + patient_id + ' = g.patientid AND d.doctorid = g.doctorid';
 			let pt_info = null;
 			client.query(text).then(response => {
