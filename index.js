@@ -41,7 +41,7 @@ function WebhookProcessing(req, res) {
 
 	switch(intent){
 		case "Welcome Intent":
-			respond = function () {
+			respond = function (agent) {
 				ssml = `<speak>Welcome to the Web<say-as interpret-as="characters">PT</say-as> appointment scheduler.</speak>`;
 				console.log(agent.session);
 				agent.add(ssml);
@@ -64,13 +64,11 @@ function WebhookProcessing(req, res) {
 						let pt_name = pt_info.fname + ' ' + pt_info.lname;  // first name + ' ' + last name
 						pt_id = pt_info.doctorid;
 						console.log(pt_id);
-						ssml = `<speak>Your Physical Therapist is ` + pt_name + `<speak>`;
+						ssml = `<speak>Your Physical Therapist is ` + pt_name + `</speak>`;
 						agent.add(ssml);
 					}
 	        //see log for output
-	      }).catch(e => {console.log(e.stack); ssml = `<speak>Unable to find Physical Therapist info for patient ` + patient_id + `<speak>`; agent.add(ssml);});
-
-				agent.add(ssml);
+	      }).catch(e => {console.log(e.stack); ssml = `<speak>Unable to find Physical Therapist info for patient ` + patient_id + `</speak>`; agent.add(ssml);});
 			}
 
 			break;
@@ -84,15 +82,13 @@ function WebhookProcessing(req, res) {
 				client.query('SELECT d.doctorid FROM doctors AS d WHERE d.fname = ' + agent.parameters['first-name'] + ' AND d.lname = ' + agent.parameters['last-name']).then(response => {
 					console.log(response.rows[0]);
 					pt_id = response.rows[0]['doctorid'];
-	      }).then(function () {
 					client.query('INSERT INTO goesto VALUES(' + patient_id + ', ' + pt_id + ')').then(response => {
 						console.log(response.rows[0]);
 						pt_id = response.rows[0];
-		      }).catch(e => {console.log(e.stack); ssml = '<speak>Unable to set Physical Therapist for patient ' + patient_id + '<speak>';});
-				}).then(function() {
-					ssml = `<speak>Your Physical Therapist was set to ` + agent.parameters['first-name'] + ' ' + agent.parameters['last-name'] + `<speak>`;
-					agent.add(ssml);
-				}).catch(e => {console.log(e.stack); ssml = `<speak>Unable to get Physical Therapist ` + agent.parameters['first-name'] + ' ' + agent.parameters['last-name'] + `<speak>`; agent.add(ssml);});
+						ssml = `<speak>Your Physical Therapist was set to ` + agent.parameters['first-name'] + ' ' + agent.parameters['last-name'] + `</speak>`;
+						agent.add(ssml);
+		      }).catch(e => {console.log(e.stack); ssml = '<speak>Unable to set Physical Therapist for patient ' + patient_id + '</speak>';});
+	      }).catch(e => {console.log(e.stack); ssml = `<speak>Unable to get Physical Therapist ` + agent.parameters['first-name'] + ' ' + agent.parameters['last-name'] + `</speak>`; agent.add(ssml);});
 			}
 			break;
 
