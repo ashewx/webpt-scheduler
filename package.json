@@ -1,0 +1,29 @@
+{
+  "name": "webpt-scheduler",
+  "version": "1.0.0",
+  "description": "Webhooks for WebPT Scheduler",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "WebPT",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "actions-on-google": "^2.3.0",
+    "bluebird": "^3.5.3",
+    "body-parser": "^1.18.3",
+    "debug": "^4.0.1",
+    "dialogflow": "^0.6.0",
+    "dialogflow-fulfillment": "^0.5.0",
+    "express": "^4.16.3",
+    "json-query": "^2.2.2",
+    "ms": "^2.1.1",
+    "pg": "^7.6.1",
+    "unirest": "^0.5.1"
+  },
+  "engines": {
+    "node": "9.8.0"
+  },
+  "keywords": [],
+  "devDependencies": {}
+}
