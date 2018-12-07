@@ -50,7 +50,7 @@ function WebhookProcessing(req, res) {
 			respond = function(agent) {
 				text = 'SELECT d.fname, d.lname, d.doctorid FROM doctors AS d, patients AS p, goesto AS g WHERE ' + patient_id + ' = g.patientid AND d.doctorid = g.doctorid';
 				let pt_info = null;
-				client.query(text).then(response => {
+				return client.query(text).then(response => {
 					console.log(response.rows[0]);
 					pt_info = response.rows[0];
 					if (pt_info !== null) {
@@ -60,8 +60,7 @@ function WebhookProcessing(req, res) {
 						agent.add(`<speak>Your Physical Therapist is ` + pt_name + `</speak>`);
 					}
 	      }).catch(e => {
-					console.log(e.stack); 
-					agent.add(`<speak>Unable to find Physical Therapist info for patient ` + patient_id + `</speak>`);
+					console.log(e.stack); ssml = `<speak>Unable to find Physical Therapist info for patient ` + patient_id + `</speak>`;
 				});
 			}
 			break;
