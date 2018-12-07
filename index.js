@@ -60,8 +60,6 @@ function WebhookProcessing(req, res) {
 				client.query(text).then(response => {
 					console.log(response.rows[0]);
 					pt_info = response.rows[0];
-	        //see log for output
-	      }).then(function() {
 					if (pt_info !== null) {
 						let pt_name = pt_info.fname + ' ' + pt_info.lname;  // first name + ' ' + last name
 						pt_id = pt_info.doctorid;
@@ -69,7 +67,8 @@ function WebhookProcessing(req, res) {
 						ssml = `<speak>Your Physical Therapist is ` + pt_name + `<speak>`;
 						agent.add(ssml);
 					}
-				}).catch(e => {console.log(e.stack); ssml = `<speak>Unable to find Physical Therapist info for patient ` + patient_id + `<speak>`; agent.add(ssml);});
+	        //see log for output
+	      }).catch(e => {console.log(e.stack); ssml = `<speak>Unable to find Physical Therapist info for patient ` + patient_id + `<speak>`; agent.add(ssml);});
 
 				agent.add(ssml);
 			}
