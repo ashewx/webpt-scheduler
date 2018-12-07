@@ -60,9 +60,10 @@ function WebhookProcessing(req, res) {
 				if (pt_info !== null) {
 					let pt_name = pt_info.fname + ' ' + pt_info.lname;  // first name + ' ' + last name
 					pt_id = pt_info.doctorid;
+					console.log(pt_id);
 					ssml = '<speak>Your Physical Therapist is ' + pt_name + '<speak>';
 				}
-			}).catch(e => {console.error(e.stack); ssml = '<speak>Unable to find Physical Therapist info for patient ' + patient_id + '<speak>';});
+			}).catch(e => {console.log(e.stack); ssml = '<speak>Unable to find Physical Therapist info for patient ' + patient_id + '<speak>';});
 
 			break;
 
@@ -78,15 +79,16 @@ function WebhookProcessing(req, res) {
 				client.query('INSERT INTO goesto VALUES(' + patient_id + ', ' + pt_id + ')').then(response => {
 					console.log(response.rows[0]);
 					pt_id = response.rows[0];
-	      }).catch(e => {console.error(e.stack); ssml = '<speak>Unable to set Physical Therapist for patient ' + patient_id + '<speak>';});
+	      }).catch(e => {console.log(e.stack); ssml = '<speak>Unable to set Physical Therapist for patient ' + patient_id + '<speak>';});
 			}).then(function() {
 				ssml = '<speak>Your Physical Therapist was set to ' + agent.parameters['first-name'] + ' ' + agent.parameters['last-name'] + '<speak>';
-			}).catch(e => {console.error(e.stack); ssml = '<speak>Unable to get Physical Therapist ' + agent.parameters['first-name'] + ' ' + agent.parameters['last-name'] + '<speak>';});
+			}).catch(e => {console.log(e.stack); ssml = '<speak>Unable to get Physical Therapist ' + agent.parameters['first-name'] + ' ' + agent.parameters['last-name'] + '<speak>';});
 			break;
 
-		case "check-missing":
+		case "scheudle-appointment":
 
 			break;
+
 		default:
 		  break;
 	}
