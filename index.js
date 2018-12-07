@@ -35,17 +35,13 @@ function WebhookProcessing(req, res) {
 	var intent = agent.intent;
 	let origMess = agent.consoleMessages[agent.consoleMessages.length-1].text;
 	console.log(origMess);
-	var ssml = `<speak>` + errorSound + `</audio>` + `</speak>`;
 	let text = null;
 	let respond = null;
 
 	switch(intent){
 		case "Welcome Intent":
-			respond = function (agent) {
-				ssml = `<speak>Welcome to the Web<say-as interpret-as="characters">PT</say-as> appointment scheduler.</speak>`;
-				console.log(agent.session);
-				agent.add(ssml);
-			}
+			let ssml = `<speak>Welcome to the Web<say-as interpret-as="characters">PT</say-as> appointment scheduler.</speak>`;
+			console.log(agent.session);
 			break;
 
 		case "print-form":
@@ -54,23 +50,19 @@ function WebhookProcessing(req, res) {
 
 		case "get-pt":
 			// SQL select doctor first name, last name, id for the patient's physical therapist
-			respond = function(agent) {
-				text = 'SELECT d.fname, d.lname, d.doctorid FROM doctors AS d, patients AS p, goesto AS g WHERE ' + patient_id + ' = g.patientid AND d.doctorid = g.doctorid';
-				let pt_info = null;
-				client.query(text).then(response => {
-					console.log(response.rows[0]);
-					pt_info = response.rows[0];
-					if (pt_info !== null) {
-						let pt_name = pt_info.fname + ' ' + pt_info.lname;  // first name + ' ' + last name
-						pt_id = pt_info.doctorid;
-						console.log(pt_id);
-						ssml = `<speak>Your Physical Therapist is ` + pt_name + `</speak>`;
-						agent.add(ssml);
-					}
-	        //see log for output
-	      }).catch(e => {console.log(e.stack); ssml = `<speak>Unable to find Physical Therapist info for patient ` + patient_id + `</speak>`; agent.add(ssml);});
-			}
-
+			text = 'SELECT d.fname, d.lname, d.doctorid FROM doctors AS d, patients AS p, goesto AS g WHERE ' + patient_id + ' = g.patientid AND d.doctorid = g.doctorid';
+			let pt_info = null;
+			client.query(text).then(response => {
+				console.log(response.rows[0]);
+				pt_info = response.rows[0];
+				if (pt_info !== null) {
+					let pt_name = pt_info.fname + ' ' + pt_info.lname;  // first name + ' ' + last name
+					pt_id = pt_info.doctorid;
+					// console.log(pt_id);
+					let ssml = `<speak>Your Physical Therapist is ` + pt_name + `</speak>`;
+        //see log for output
+				}
+      }).catch(e => {console.log(e.stack); ssml = `<speak>Unable to find Physical Therapist info for patient ` + patient_id + `</speak>`;});
 			break;
 
 		case "set-pt":
@@ -78,18 +70,15 @@ function WebhookProcessing(req, res) {
 			// get physical therapist for current user
 			// pt_id = "SELECT d.id FROM doctors AS d WHERE d.name = " + agent.parameters
 			// INSERT INTO goesto VALUES(patient_id, pt_id);
-			respond = function (agent) {
-				client.query('SELECT d.doctorid FROM doctors AS d WHERE d.fname = ' + agent.parameters['first-name'] + ' AND d.lname = ' + agent.parameters['last-name']).then(response => {
+			client.query('SELECT d.doctorid FROM doctors AS d WHERE d.fname = ' + agent.parameters['first-name'] + ' AND d.lname = ' + agent.parameters['last-name']).then(response => {
+				console.log(response.rows[0]);
+				pt_id = response.rows[0]['doctorid'];
+				client.query('INSERT INTO goesto VALUES(' + patient_id + ', ' + pt_id + ')').then(response => {
 					console.log(response.rows[0]);
-					pt_id = response.rows[0]['doctorid'];
-					client.query('INSERT INTO goesto VALUES(' + patient_id + ', ' + pt_id + ')').then(response => {
-						console.log(response.rows[0]);
-						pt_id = response.rows[0];
-						ssml = `<speak>Your Physical Therapist was set to ` + agent.parameters['first-name'] + ' ' + agent.parameters['last-name'] + `</speak>`;
-						agent.add(ssml);
-		      }).catch(e => {console.log(e.stack); ssml = '<speak>Unable to set Physical Therapist for patient ' + patient_id + '</speak>';});
-	      }).catch(e => {console.log(e.stack); ssml = `<speak>Unable to get Physical Therapist ` + agent.parameters['first-name'] + ' ' + agent.parameters['last-name'] + `</speak>`; agent.add(ssml);});
-			}
+					pt_id = response.rows[0];
+					let ssml = `<speak>Your Physical Therapist was set to ` + agent.parameters['first-name'] + ' ' + agent.parameters['last-name'] + `</speak>`;
+	      }).catch(e => {console.log(e.stack); ssml = '<speak>Unable to set Physical Therapist for patient ' + patient_id + '</speak>';});
+      }).catch(e => {console.log(e.stack); ssml = `<speak>Unable to get Physical Therapist ` + agent.parameters['first-name'] + ' ' + agent.parameters['last-name'] + `</speak>`;});
 			break;
 
 		case "schedule-appointment":
@@ -100,7 +89,12 @@ function WebhookProcessing(req, res) {
 		  break;
 	}
 
-	console.log(ssml);
+
+	function respond(agent) {
+		console.log(ssml);
+		agent.add(ssml);
+	}
+
 	let intentMap = new Map();
 	intentMap.set(intent, respond);
 	agent.handleRequest(intentMap);
