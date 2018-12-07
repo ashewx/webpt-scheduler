@@ -36,7 +36,6 @@ function WebhookProcessing(req, res) {
 	let origMess = agent.consoleMessages[agent.consoleMessages.length-1].text;
 	console.log(origMess);
 	let text = null;
-	let respond = null;
 
 	switch(intent){
 		case "Welcome Intent":
