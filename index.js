@@ -52,7 +52,7 @@ function WebhookProcessing(req, res) {
 			// SQL select doctor first name, last name, id for the patient's physical therapist
 			text = 'SELECT d.fname, d.lname, d.doctorid FROM doctors AS d, patients AS p, goesto AS g WHERE ' + patient_id + ' = g.patientid AND d.doctorid = g.doctorid';
 			let pt_info = null;
-			client.query(text).then(response => {
+			client.query(text).then(async function(response) {
 				console.log(response.rows[0]);
 				pt_info = response.rows[0];
 				if (pt_info !== null) {
@@ -60,7 +60,6 @@ function WebhookProcessing(req, res) {
 					pt_id = pt_info.doctorid;
 					// console.log(pt_id);
 					let ssml = `<speak>Your Physical Therapist is ` + pt_name + `</speak>`;
-        //see log for output
 				}
       }).catch(e => {console.log(e.stack); ssml = `<speak>Unable to find Physical Therapist info for patient ` + patient_id + `</speak>`;});
 			break;
@@ -70,10 +69,10 @@ function WebhookProcessing(req, res) {
 			// get physical therapist for current user
 			// pt_id = "SELECT d.id FROM doctors AS d WHERE d.name = " + agent.parameters
 			// INSERT INTO goesto VALUES(patient_id, pt_id);
-			client.query('SELECT d.doctorid FROM doctors AS d WHERE d.fname = ' + agent.parameters['first-name'] + ' AND d.lname = ' + agent.parameters['last-name']).then(response => {
+			client.query('SELECT d.doctorid FROM doctors AS d WHERE d.fname = ' + agent.parameters['first-name'] + ' AND d.lname = ' + agent.parameters['last-name']).then(async function(response) {
 				console.log(response.rows[0]);
 				pt_id = response.rows[0]['doctorid'];
-				client.query('INSERT INTO goesto VALUES(' + patient_id + ', ' + pt_id + ')').then(response => {
+				client.query('INSERT INTO goesto VALUES(' + patient_id + ', ' + pt_id + ')').then(async function(response) {
 					console.log(response.rows[0]);
 					pt_id = response.rows[0];
 					let ssml = `<speak>Your Physical Therapist was set to ` + agent.parameters['first-name'] + ' ' + agent.parameters['last-name'] + `</speak>`;
