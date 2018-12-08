@@ -68,7 +68,7 @@ function WebhookProcessing(req, res) {
 		case "set-pt":
 			// SQL update the patient's doctor
 			respond = function(agent) {
-				text = `UPDATE goesto SET doctorid = (SELECT d.doctorid FROM doctors AS d WHERE d.fname = '` + agent.parameters['first-name'] + `' AND d.lname = '` + agent.parameters['last-name'] + `') WHERE ` ' + patient_id + ` = patientid`;
+				text = `UPDATE goesto SET doctorid = (SELECT d.doctorid FROM doctors AS d WHERE d.fname = '` + agent.parameters['first-name'] + `' AND d.lname = '` + agent.parameters['last-name'] + `') WHERE ` + patient_id + ` = patientid`;
 				return client.query(text).then(response => {
 					pt_info = response.rows[0];
 					console.log(pt_info);
@@ -81,8 +81,6 @@ function WebhookProcessing(req, res) {
 				}).catch(e => {
 					console.log(e.stack);
 				});
-
-
 			}
 
 
