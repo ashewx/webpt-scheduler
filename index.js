@@ -66,6 +66,32 @@ function WebhookProcessing(req, res) {
 			break;
 
 		case "set-pt":
+			// SQL update the patient's doctor
+			respond = function(agent) {
+				text = 'SELECT d.doctorid, d.fname, d.lname FROM doctors AS d WHERE d.fname = ' + agent.parameters['first-name'] + ' AND d.lname = ' + agent.parameters['last-name'];
+				return client.query(text).then(response => {
+					if (pt_info !== null) {
+						pt_name = pt_info.fname + ' ' + pt_info.lname;  // first name + ' ' + last name
+						pt_id = pt_info.doctorid;
+						// console.log(pt_id);
+						let text2 = 'UPDATE goesto SET doctorid = ' + pt_id + ' WHERE ' + patient_id + ' = patientid';
+						client.query(text2).then(response => {
+							if (pt_info !== null) {
+								pt_name = pt_info.fname + ' ' + pt_info.lname;  // first name + ' ' + last name
+								pt_id = pt_info.doctorid;
+								// console.log(pt_id);
+								agent.add(`<speak>Your Physical Therapist was updated to ` + pt_name + `.</speak>`);
+							}
+						}).catch(e => {
+							console.log(e.stack); ssml = `<speak>Unable to update Physical Therapist info for patient ` + patient_id + `</speak>`;
+						});
+					}
+				}).catch(e => {
+					console.log(e.stack);
+				});
+
+
+			}
 
 
 			break;
@@ -108,7 +134,11 @@ function WebhookProcessing(req, res) {
 							console.log(response1.rows[0].appid);
 							let last_app_key = response1.rows[0].appid + 1;
 							let text2 = `INSERT INTO appointments VALUES(` + last_app_key + `, '` + app_date + `', '` + app_time + `'); INSERT INTO schedule VALUES(` + pt_id + `, ` + last_app_key + `);`;
-							client.query(text2);
+							client.query(text2).catch(e => {
+								console.log(e.stack);
+							});
+						}).catch(e => {
+							console.log(e.stack);
 						});
 						agent.add(`<speak>Great! I will add you to ` + pt_name + `'s schedule for ` + app_date + ` at ` + app_time + `.</speak>`);
 					}
