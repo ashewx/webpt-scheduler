@@ -106,7 +106,7 @@ function WebhookProcessing(req, res) {
 					 	// GET LAST app key
 						client.query('SELECT appid FROM appointments ORDER BY appid DESC LIMIT 1').then(response1 => {
 							console.log(response1.rows[0].appid);
-							let last_app_key = response1.rows[0].appid;
+							let last_app_key = response1.rows[0].appid + 1;
 							let text2 = `INSERT INTO appointments VALUES(` + last_app_key + `, '` + app_date + `', '` + app_time + `'); INSERT INTO schedule VALUES(` + pt_id + `, ` + last_app_key + `);`;
 							client.query(text2);
 						});
