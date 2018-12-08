@@ -116,10 +116,10 @@ function WebhookProcessing(req, res) {
 				return client.query(text).then(response => {
 					console.log(response.rows[0]);
 					full_info = response.rows[0];
-					app_info = full_info.appid;
-					pt_id = full_info.doctorid;
-					pt_name = full_info.fname + ' ' + full_info.lname;
-					if (app_info !== undefined) {
+					if (full_info !== undefined) {
+						app_info = full_info.appid;
+						pt_id = full_info.doctorid;
+						pt_name = full_info.fname + ' ' + full_info.lname;
 						agent.add(`<speak>Unfortunately ` + pt_name + ` is busy during that time. Is there another time that works for you?</speak>`);
 					}
 					else {
