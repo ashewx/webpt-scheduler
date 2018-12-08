@@ -98,19 +98,18 @@ function WebhookProcessing(req, res) {
 				return client.query(text).then(response => {
 					console.log(response.rows[0]);
 					app_info = response.rows[0];
-
 					if (app_info !== undefined) {
 						agent.add(`<speak>Unfortunately ` + pt_name + ` is busy during that time. Is there another time that works for you?</speak>`);
 					}
 					else {
 					 	// GET LAST app key
-						client.query('SELECT appid FROM appointments ORDER BY DESC appid LIMIT 1').then(response1 => {
+						client.query('SELECT appid FROM appointments ORDER BY appid DESC LIMIT 1').then(response1 => {
 							console.log(response1.rows[0].appid);
 							let last_app_key = response1.rows[0].appid;
-							// let text2 = 'INSERT INTO apptime VALUES(' + last_app_key + ', ' + agent.parameters['date'] + ', ' + agent.parameters['time'] + '); INSERT INTO schedule VALUES(' + pt_id + ', ' + last_app_key + ');';
-							// client.query(text2);
+							let text2 = `INSERT INTO apptime VALUES(` + last_app_key + `, '` + app_date + `', '` + app_time + `); INSERT INTO schedule VALUES(` + pt_id + `, ` + last_app_key + `);`;
+							client.query(text2);
 						});
-						agent.add(`<speak>Great! I will add you to ` + pt_name + `'s schedule for ` + agent.parameters['date'] + ` at ` + agent.parameters['time'] + `.</speak>`);
+						agent.add(`<speak>Great! I will add you to ` + pt_name + `'s schedule for ` + app_date + ` at ` + app_time + `.</speak>`);
 					}
 				}).catch(e => {
 					console.log(e.stack);
