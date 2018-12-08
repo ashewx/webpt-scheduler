@@ -68,22 +68,12 @@ function WebhookProcessing(req, res) {
 		case "set-pt":
 			// SQL update the patient's doctor
 			respond = function(agent) {
-				text = `SELECT d.doctorid, d.fname, d.lname FROM doctors AS d WHERE d.fname = '` + agent.parameters['first-name'] + `' AND d.lname = '` + agent.parameters['last-name'] + `'`;
+				text = `UPDATE goesto SET doctorid = (SELECT d.doctorid FROM doctors AS d WHERE d.fname = '` + agent.parameters['first-name'] + `' AND d.lname = '` + agent.parameters['last-name'] + `') WHERE ` ' + patient_id + ` = patientid`;
 				return client.query(text).then(response => {
 					pt_info = response.rows[0];
-					pt_name = pt_info.fname + ' ' + pt_info.lname;  // first name + ' ' + last name
-					pt_id = pt_info.doctorid;
-					console.log(pt_id);
+					console.log(pt_info);
 					if (pt_info !== null) {
-						let text2 = 'UPDATE goesto SET doctorid = ' + pt_id + ' WHERE ' + patient_id + ' = patientid';
-						client.query(text2).then(response1 => {
-								pt_name = pt_info.fname + ' ' + pt_info.lname;  // first name + ' ' + last name
-								pt_id = pt_info.doctorid;
-								console.log(pt_info);
-								agent.add(`<speak>Your Physical Therapist was updated to ` + pt_name + `. When would you like to make the appointment?</speak>`);
-						}).catch(e => {
-							console.log(e.stack);
-						});
+						agent.add(`<speak>Your Physical Therapist was updated. When would you like to make the appointment?</speak>`);
 					}
 					else {
 						agent.add(`<speak>Failed to update your Physical Therapist.</speak>`);
