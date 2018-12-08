@@ -104,8 +104,8 @@ function WebhookProcessing(req, res) {
 						client.query('SELECT appid FROM appointments ORDER BY DESC appid LIMIT 1').then(response1 => {
 							console.log(response1.rows[0].appid);
 							let last_app_key = response1.rows[0].appid;
-							let text2 = 'INSERT INTO apptime VALUES(' + last_app_key + ', ' + agent.parameters['date'] + ', ' + agent.parameters['time'] + '); INSERT INTO schedule VALUES(' + pt_id + ', ' + last_app_key + ');';
-							client.query(text2);
+							//let text2 = 'INSERT INTO apptime VALUES(' + last_app_key + ', ' + agent.parameters['date'] + ', ' + agent.parameters['time'] + '); INSERT INTO schedule VALUES(' + pt_id + ', ' + last_app_key + ');';
+							//client.query(text2);
 						});
 						agent.add(`<speak>Great! I will add you to ` + pt_name + `'s schedule for ` + agent.parameters['date'] + ` at ` + agent.parameters['time'] + `.</speak>`);
 					}
