@@ -69,6 +69,7 @@ function WebhookProcessing(req, res) {
 
 
 			break;
+
 		case "schedule-appointment":
 			respond = function(agent) {
 				text = 'SELECT d.fname, d.lname, d.doctorid FROM doctors AS d, patients AS p, goesto AS g WHERE ' + patient_id + ' = g.patientid AND d.doctorid = g.doctorid';
@@ -92,7 +93,7 @@ function WebhookProcessing(req, res) {
 			let app_date = agent.parameters['date'].substring(0,10);
 			let app_time = agent.parameters['time'].substring(11,19);
 			respond = function(agent) {
-				text = `SELECT a.appid FROM appointments AS a, schedule AS s WHERE ` + pt_id + ` = s.doctorid AND '` + app_date + `' = a.appdate AND '` + app_time + `' = a.apptime`;
+				text = `SELECT a.appid FROM appointments AS a, schedule AS s WHERE ` + pt_id + ` = s.doctorid AND a.appid = s.appid AND '` + app_date + `' = a.appdate AND '` + app_time + `' = a.apptime`;
 				console.log(text)
 				let app_info = null;
 				return client.query(text).then(response => {
@@ -106,7 +107,7 @@ function WebhookProcessing(req, res) {
 						client.query('SELECT appid FROM appointments ORDER BY appid DESC LIMIT 1').then(response1 => {
 							console.log(response1.rows[0].appid);
 							let last_app_key = response1.rows[0].appid;
-							let text2 = `INSERT INTO apptime VALUES(` + last_app_key + `, '` + app_date + `', '` + app_time + `'); INSERT INTO schedule VALUES(` + pt_id + `, ` + last_app_key + `);`;
+							let text2 = `INSERT INTO appointments VALUES(` + last_app_key + `, '` + app_date + `', '` + app_time + `'); INSERT INTO schedule VALUES(` + pt_id + `, ` + last_app_key + `);`;
 							client.query(text2);
 						});
 						agent.add(`<speak>Great! I will add you to ` + pt_name + `'s schedule for ` + app_date + ` at ` + app_time + `.</speak>`);
