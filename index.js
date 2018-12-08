@@ -109,12 +109,15 @@ function WebhookProcessing(req, res) {
 			let app_date = agent.parameters['date'].substring(0,10);
 			let app_time = agent.parameters['time'].substring(11,19);
 			respond = function(agent) {
-				text = `SELECT a.appid FROM appointments AS a, schedule AS s WHERE ` + pt_id + ` = s.doctorid AND a.appid = s.appid AND '` + app_date + `' = a.appdate AND '` + app_time + `' = a.apptime`;
+				text = `SELECT a.appid, d.doctorid, d.fname, d.lname FROM appointments AS a, schedule AS s, patients AS p, doctors d, goesto AS g WHERE p.patientid = g.patientid AND g.doctorid = s.doctorid AND g.doctorid = d.doctorid AND a.appid = s.appid AND '` + app_date + `' = a.appdate AND '` + app_time + `' = a.apptime`;
 				console.log(text)
 				let app_info = null;
 				return client.query(text).then(response => {
 					console.log(response.rows[0]);
-					app_info = response.rows[0];
+					full_info = response.rows[0];
+					app_info = full_info.appid;
+					pt_id = full_info.doctorid;
+					pt_name = full_info.fname + ' ' + full_info.lname;
 					if (app_info !== undefined) {
 						agent.add(`<speak>Unfortunately ` + pt_name + ` is busy during that time. Is there another time that works for you?</speak>`);
 					}
