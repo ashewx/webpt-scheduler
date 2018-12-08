@@ -91,6 +91,7 @@ function WebhookProcessing(req, res) {
 		case "appointment-times":
 			respond = function(agent) {
 				text = 'SELECT a.appid FROM doctors AS d, appointments AS a, schedule AS s WHERE ' + pt_id + ' = s.doctorid AND ' + agent.parameters['date'] + ' = a.appdate AND ' + agent.parameters['time'] + ' = a.apptime';
+				console.log(text)
 				let app_info = null;
 				return client.query(text).then(response => {
 					console.log(response.rows[0]);
