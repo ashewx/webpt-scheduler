@@ -52,7 +52,6 @@ function WebhookProcessing(req, res) {
 				text = 'SELECT d.fname, d.lname, d.doctorid FROM doctors AS d, patients AS p, goesto AS g WHERE ' + patient_id + ' = g.patientid AND d.doctorid = g.doctorid';
 				let pt_info = null;
 				return client.query(text).then(response => {
-					console.log(response.rows[0]);
 					pt_info = response.rows[0];
 					if (pt_info !== null) {
 						pt_name = pt_info.fname + ' ' + pt_info.lname;  // first name + ' ' + last name
@@ -96,12 +95,14 @@ function WebhookProcessing(req, res) {
 				return client.query(text).then(response => {
 					console.log(response.rows[0]);
 					app_info = response.rows[0];
+
 					if (app_info !== null) {
 						agent.add(`<speak>Unfortunately ` + pt_name + ` is busy during that time. Is there another time that works for you?</speak>`);
 					}
 					else {
 						// GET LAST app key
 						client.query('SELECT appid FROM appointments ORDER BY DESC appid LIMIT 1').then(response1 => {
+							console.log(response1.rows[0].appid);
 							let last_app_key = response1.rows[0].appid;
 							let text2 = 'INSERT INTO apptime VALUES(' + last_app_key + ', ' + agent.parameters['date'] + ', ' + agent.parameters['time'] + '); INSERT INTO schedule VALUES(' + pt_id + ', ' + last_app_key + ');';
 							client.query(text2);
