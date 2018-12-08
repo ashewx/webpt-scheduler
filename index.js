@@ -92,7 +92,7 @@ function WebhookProcessing(req, res) {
 			let app_date = agent.parameters['date'].substring(0,10);
 			let app_time = agent.parameters['time'].substring(11,19);
 			respond = function(agent) {
-				text = 'SELECT a.appid FROM appointments AS a, schedule AS s WHERE ' + pt_id + ' = s.doctorid AND ' + app_date + ' = a.appdate AND ' + app_time + ' = a.apptime';
+				text = `SELECT a.appid FROM appointments AS a, schedule AS s WHERE ` + pt_id + ` = s.doctorid AND '` + app_date + `' = a.appdate AND '` + app_time + `' = a.apptime`;
 				console.log(text)
 				let app_info = null;
 				return client.query(text).then(response => {
